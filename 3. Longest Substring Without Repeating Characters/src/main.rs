@@ -1,44 +1,27 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
+use std::ops::Range;
 
-struct LongestSubstringCalc {
-	set: HashSet<char>,
-	substring: String,
-}
+pub fn length_of_longest_substring(s: String) -> i32 {
+	let mut map: HashMap<char, usize> = HashMap::new();
+	let mut substring_range: Range<usize> = Range {start: 0, end: 0};
+	let mut max_length = 0usize;
 
-impl LongestSubstringCalc {
-	fn new() -> LongestSubstringCalc {
-		LongestSubstringCalc{set: HashSet::new(), substring: String::new()}
-	}
-
-	fn push(&mut self, chr: char) -> i32 {
-		if self.set.contains(&chr) {
-			if let Some(index) = self.substring.find(chr) {
-				if let Some(removed_str) = self.substring.get(0..=index) {
-					for removed_char in removed_str.chars() {
-						assert!(self.set.remove(&removed_char));
-					}
-					self.substring.replace_range(0..=index, "");
-				} else {
-					unreachable!();
+	for (idx, chr) in s.chars().enumerate() {
+		if let Some(&repeated_idx) = map.get(&chr) {
+			if let Some(removed_str) = s.get(substring_range.start..repeated_idx) {
+				for removed_char in removed_str.chars() {
+					map.remove(&removed_char);
 				}
+				substring_range.start = repeated_idx + 1;
 			} else {
 				unreachable!();
 			}
 		}
-		self.set.insert(chr);
-		self.substring.push(chr);
-		self.set.len() as i32
+		map.insert(chr, idx);
+		substring_range.end = idx;
+		max_length = max_length.max(map.len());
 	}
-}
-
-pub fn length_of_longest_substring(s: String) -> i32 {
-	let mut calc = LongestSubstringCalc::new();
-	let mut max_length = 0i32;
-	for chr in s.chars() {
-		let new_length = calc.push(chr);
-		max_length = max_length.max(new_length);
-	}
-	return max_length;
+	return max_length as i32;
 }
 
 fn main() {
