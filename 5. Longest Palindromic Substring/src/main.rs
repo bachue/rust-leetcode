@@ -1,9 +1,17 @@
 pub fn longest_palindrome(s: String) -> String {
 	if s.len() > 0 {
 		let bytes = s.as_bytes();
-		let iter1 = (1..bytes.len()-1).map(|center_idx| longest_palindrome_in_odd_substring_expanded_from_center(bytes, center_idx) );
-		let iter2 = (0..bytes.len()-1).map(|center_idx| longest_palindrome_in_even_substring_expanded_from_center(bytes, center_idx) );
-		let longest_palindrome = iter1.chain(iter2).max_by_key(|palindrome| palindrome.len() ).or_else(|| s.get(0..1).map(|ss| ss.as_bytes() )).unwrap();
+		let iter1 = (1..bytes.len() - 1).map(|center_idx| {
+			longest_palindrome_in_odd_substring_expanded_from_center(bytes, center_idx)
+		});
+		let iter2 = (0..bytes.len() - 1).map(|center_idx| {
+			longest_palindrome_in_even_substring_expanded_from_center(bytes, center_idx)
+		});
+		let longest_palindrome = iter1
+			.chain(iter2)
+			.max_by_key(|palindrome| palindrome.len())
+			.or_else(|| s.get(0..1).map(|ss| ss.as_bytes()))
+			.unwrap();
 		unsafe { String::from_utf8_unchecked(longest_palindrome.to_vec()) }
 	} else {
 		s
@@ -11,7 +19,7 @@ pub fn longest_palindrome(s: String) -> String {
 }
 
 fn longest_palindrome_in_odd_substring_expanded_from_center(s: &[u8], center_idx: usize) -> &[u8] {
-	let mut substring = s.get(center_idx..(center_idx+1)).unwrap();
+	let mut substring = s.get(center_idx..(center_idx + 1)).unwrap();
 	for expand_length in 1..=center_idx {
 		let left_bound = center_idx - expand_length;
 		let right_bound = center_idx + expand_length;
@@ -25,7 +33,7 @@ fn longest_palindrome_in_odd_substring_expanded_from_center(s: &[u8], center_idx
 				} else {
 					break;
 				}
-			},
+			}
 			_ => {
 				break;
 			}
@@ -34,7 +42,10 @@ fn longest_palindrome_in_odd_substring_expanded_from_center(s: &[u8], center_idx
 	substring
 }
 
-fn longest_palindrome_in_even_substring_expanded_from_center(s: &[u8], center_idx_1: usize) -> &[u8] {
+fn longest_palindrome_in_even_substring_expanded_from_center(
+	s: &[u8],
+	center_idx_1: usize,
+) -> &[u8] {
 	let center_idx_2 = center_idx_1 + 1;
 	let mut substring = s.get(center_idx_1..center_idx_2).unwrap();
 	for expand_length in 0..=center_idx_1 {
@@ -49,7 +60,7 @@ fn longest_palindrome_in_even_substring_expanded_from_center(s: &[u8], center_id
 				} else {
 					break;
 				}
-			},
+			}
 			_ => {
 				break;
 			}
